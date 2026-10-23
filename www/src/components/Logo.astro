@@ -1,0 +1,35 @@
+---
+import { site } from '../lib/site';
+
+interface Props {
+	size?: 'sm' | 'xl';
+	as?: 'span' | 'h1';
+}
+
+const { size = 'sm', as: Tag = 'span' } = Astro.props;
+---
+
+<Tag class:list={['logo', size]}>{site.name}<span class="dot" aria-hidden="true">.</span></Tag>
+
+<style>
+	.logo {
+		font-family: var(--font-mono);
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 1;
+		white-space: nowrap;
+	}
+
+	.sm {
+		font-size: 1.35rem;
+	}
+
+	.xl {
+		font-size: clamp(2.5rem, 15vw, 11rem);
+		letter-spacing: -0.06em;
+	}
+
+	.dot {
+		color: var(--accent);
+	}
+</style>

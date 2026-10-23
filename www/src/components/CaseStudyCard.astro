@@ -1,0 +1,132 @@
+---
+import type { Post } from '../lib/posts';
+
+interface Props {
+	post: Post;
+}
+
+const { post } = Astro.props;
+const { title, description, draft, caseStudy } = post.data;
+---
+
+<article class="case-card">
+	<p class="eyebrow">Blog{draft && <span class="draft">Draft</span>}</p>
+	<h3>
+		<a href={`/blog/${post.id}`}>{title}</a>
+	</h3>
+	<p class="description">{description}</p>
+	{
+		caseStudy?.highlights.length ? (
+			<ul class="highlights">
+				{caseStudy.highlights.map((highlight) => (
+					<li>{highlight}</li>
+				))}
+			</ul>
+		) : null
+	}
+	<span class="cta" aria-hidden="true">Read the post <span class="arrow">→</span></span>
+</article>
+
+<style>
+	.case-card {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		padding: 1.75rem;
+		border: 1px solid var(--rule);
+		border-radius: var(--radius);
+		background: var(--surface);
+		transition:
+			border-color 0.2s,
+			transform 0.2s,
+			box-shadow 0.2s;
+	}
+
+	.case-card:hover,
+	.case-card:focus-within {
+		border-color: var(--accent);
+		transform: translateY(-2px);
+		box-shadow: 0 12px 32px -16px color-mix(in srgb, var(--accent) 45%, transparent);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.case-card {
+			transition: none;
+		}
+		.case-card:hover,
+		.case-card:focus-within {
+			transform: none;
+		}
+	}
+
+	h3 {
+		font-size: 1.5rem;
+	}
+
+	/* Stretch the link over the whole card. */
+	h3 a {
+		text-decoration: none;
+	}
+
+	h3 a::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+	}
+
+	h3 a:focus-visible {
+		outline: none;
+	}
+
+	.case-card:has(a:focus-visible) {
+		outline: 2px solid var(--accent);
+		outline-offset: 3px;
+	}
+
+	.description {
+		color: var(--muted);
+	}
+
+	.highlights {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		padding: 0;
+		list-style: none;
+	}
+
+	.highlights li {
+		padding: 0.2rem 0.65rem;
+		border-radius: 999px;
+		background: var(--accent-soft);
+		color: var(--accent);
+		font-size: 0.8rem;
+		font-weight: 500;
+	}
+
+	.cta {
+		margin-top: auto;
+		padding-top: 0.5rem;
+		font-size: 0.9rem;
+		font-weight: 600;
+	}
+
+	.arrow {
+		display: inline-block;
+		transition: transform 0.2s;
+	}
+
+	.case-card:hover .arrow {
+		transform: translateX(4px);
+	}
+
+	.draft {
+		margin-left: 0.5rem;
+		padding: 0.1rem 0.5rem;
+		border-radius: 999px;
+		background: var(--rule);
+		color: var(--muted);
+	}
+</style>

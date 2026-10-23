@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts } from '../../lib/posts';
+
+const posts = await getPosts();
+---
+
+<BaseLayout decor="wide" title="Blog" description="Notes on front-end engineering, design systems, migrations and accessibility.">
+	<div class="wrap page">
+		<header>
+			<p class="eyebrow">Blog</p>
+			<h1>Writing</h1>
+			<p class="lede">Notes on front-end engineering, design systems, migrations and accessibility.</p>
+		</header>
+		{posts.length > 0 ? <PostList posts={posts} /> : <p class="lede">Posts are on the way.</p>}
+	</div>
+</BaseLayout>
+
+<style>
+	.page {
+		padding-top: 5rem;
+	}
+
+	header {
+		margin-bottom: 3rem;
+	}
+
+	h1 {
+		margin-top: 0.5rem;
+		font-size: clamp(2.5rem, 7vw, 4.5rem);
+	}
+
+	.lede {
+		margin-top: 1rem;
+		max-width: 36rem;
+		font-size: 1.15rem;
+		color: var(--muted);
+	}
+</style>

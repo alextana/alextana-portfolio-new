@@ -1,0 +1,120 @@
+---
+import Logo from './Logo.astro';
+import { nav } from '../lib/site';
+
+interface Props {
+	/** Hide the header until the element marked `data-hero` has scrolled out of view. */
+	revealAfterHero?: boolean;
+}
+
+const { revealAfterHero = false } = Astro.props;
+const path = Astro.url.pathname;
+---
+
+<header class="site-header" data-reveal={revealAfterHero ? '' : undefined}>
+	<div class="wrap inner">
+		<a href="/" class="home" aria-label="alextana, home"><Logo /></a>
+		<nav aria-label="Main">
+			<ul>
+				{
+					nav.map(({ label, href }) => (
+						<li>
+							<a href={href} aria-current={path.startsWith(href) && href !== '/' ? 'page' : undefined}>
+								{label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+	</div>
+</header>
+
+<script>
+	const header = document.querySelector<HTMLElement>('.site-header[data-reveal]');
+	const hero = document.querySelector('[data-hero]');
+
+	if (header && hero) {
+		const observer = new IntersectionObserver(([entry]) => {
+			header.classList.toggle('is-visible', !entry.isIntersecting);
+		});
+		observer.observe(hero);
+	}
+</script>
+
+<style>
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		height: var(--header-height);
+		background: color-mix(in srgb, var(--bg) 80%, transparent);
+		backdrop-filter: blur(12px);
+		border-bottom: 1px solid var(--rule);
+	}
+
+	/* On the homepage the header floats over the page and slides in once the hero is gone. */
+	.site-header[data-reveal] {
+		position: fixed;
+		inset-inline: 0;
+		transform: translateY(-100%);
+		transition: transform 0.3s ease;
+	}
+
+	.site-header[data-reveal]:is(.is-visible, :focus-within) {
+		transform: none;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.site-header[data-reveal] {
+			transition: none;
+		}
+	}
+
+	.inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 100%;
+	}
+
+	.home {
+		text-decoration: none;
+	}
+
+	ul {
+		display: flex;
+		gap: 0.25rem;
+		padding: 0;
+		list-style: none;
+	}
+
+	nav a {
+		display: block;
+		padding: 0.4rem 0.75rem;
+		border-radius: 999px;
+		font-size: 0.9rem;
+		font-weight: 500;
+		color: var(--muted);
+		text-decoration: none;
+		transition: color 0.15s, background-color 0.15s;
+	}
+
+	nav a:hover,
+	nav a[aria-current='page'] {
+		color: var(--text);
+		background: var(--rule);
+	}
+
+	@media (max-width: 30rem) {
+		ul {
+			gap: 0;
+		}
+
+		nav a {
+			padding-inline: 0.5rem;
+			font-size: 0.85rem;
+			white-space: nowrap;
+		}
+	}
+</style>

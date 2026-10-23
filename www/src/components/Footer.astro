@@ -1,0 +1,56 @@
+---
+import { site } from '../lib/site';
+
+const links = [
+	{ label: 'Email', href: `mailto:${site.email}` },
+	{ label: 'GitHub', href: site.github },
+	{ label: 'LinkedIn', href: site.linkedin },
+].filter((link) => link.href);
+---
+
+<footer class="site-footer">
+	<div class="wrap inner">
+		<p>© {new Date().getFullYear()} {site.author} · {site.location}</p>
+		<ul>
+			{
+				links.map(({ label, href }) => (
+					<li>
+						<a href={href}>{label}</a>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		margin-top: 6rem;
+		padding-block: 2rem;
+		border-top: 1px solid var(--rule);
+		font-size: 0.9rem;
+		color: var(--muted);
+	}
+
+	.inner {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	ul {
+		display: flex;
+		gap: 1.25rem;
+		padding: 0;
+		list-style: none;
+	}
+
+	a {
+		text-decoration: none;
+	}
+
+	a:hover {
+		color: var(--accent);
+	}
+</style>

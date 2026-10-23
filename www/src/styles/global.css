@@ -1,0 +1,146 @@
+@import 'tailwindcss';
+
+@plugin 'daisyui' {
+	themes: false;
+}
+
+/* daisyUI theme mapped onto the site tokens below, so light/dark follows them automatically. */
+@plugin 'daisyui/theme' {
+	name: 'alextana';
+	default: true;
+	prefersdark: true;
+	color-scheme: light dark;
+	--color-base-100: var(--bg);
+	--color-base-200: var(--surface);
+	--color-base-300: var(--rule);
+	--color-base-content: var(--text);
+	--color-primary: var(--accent);
+	--color-primary-content: light-dark(#fff8ef, #120d26);
+	--color-secondary: var(--purple);
+	--color-secondary-content: light-dark(#fff8ef, #120d26);
+	--color-accent: var(--pink);
+	--color-accent-content: light-dark(#fff8ef, #120d26);
+	--color-neutral: var(--rule);
+	--color-neutral-content: var(--text);
+	--radius-field: 999px;
+	--radius-box: var(--radius);
+	--radius-selector: 999px;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
+}
+
+:root {
+	color-scheme: light dark;
+	/* Always reserve the scrollbar's space so centred content (and the header nav) doesn't shift between short and long pages.
+	   Unlayered so it beats daisyUI's base-layer rule, which only reserves it while a modal locks scroll. */
+	scrollbar-gutter: stable;
+
+	/* Sunset: night sky over the sea (dark) / warm sand at golden hour (light), with the setting sun's gold as the accent. */
+	--bg: light-dark(#fff8ef, #120d26);
+	--surface: light-dark(#fffdf8, #1a1433);
+	--text: light-dark(#24172f, #fff4e6);
+	--muted: light-dark(#6b5677, #c4b5d4);
+	--rule: light-dark(#eadbc8, #2f2550);
+	--accent: light-dark(#a8480a, #ffc46b);
+	--accent-soft: light-dark(#fcebd4, #3a2a3e);
+	--purple: light-dark(#6b3fa0, #b79cff);
+	--pink: light-dark(#b8324f, #ff8a7a);
+
+	--radius: 1rem;
+	--container: 72rem;
+	--header-height: 4rem;
+
+	font-family: var(--font-body);
+	font-size: 16px;
+	line-height: 1.6;
+	color: var(--text);
+	background: var(--bg);
+	-webkit-font-smoothing: antialiased;
+}
+
+/* Element defaults live in the base layer so daisyUI components (and utilities) can override them. */
+@layer base {
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+		margin: 0;
+	}
+
+	html {
+		scroll-behavior: smooth;
+		scroll-padding-top: calc(var(--header-height) + 1rem);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+	}
+
+	img,
+	svg {
+		display: block;
+		max-width: 100%;
+	}
+
+	a {
+		color: inherit;
+	}
+
+	:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 3px;
+		border-radius: 4px;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4 {
+		font-family: var(--font-display);
+		font-weight: 700;
+		line-height: 1.15;
+		letter-spacing: -0.02em;
+		text-wrap: balance;
+	}
+}
+
+.wrap {
+	width: min(100% - 3rem, var(--container));
+	margin-inline: auto;
+}
+
+.eyebrow {
+	font-size: 0.8rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--accent);
+}
+
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.skip-link {
+	position: absolute;
+	top: 0.75rem;
+	left: 0.75rem;
+	z-index: 100;
+	padding: 0.5rem 1rem;
+	border-radius: 999px;
+	background: var(--text);
+	color: var(--bg);
+	transform: translateY(-200%);
+}
+
+.skip-link:focus {
+	transform: none;
+}

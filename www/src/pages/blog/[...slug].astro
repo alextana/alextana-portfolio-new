@@ -1,0 +1,171 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate, getPosts } from '../../lib/posts';
+
+export async function getStaticPaths() {
+	const posts = await getPosts();
+	return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, updatedDate, tags, draft } = post.data;
+const { Content } = await render(post);
+---
+
+<BaseLayout decor="narrow" title={title} description={description}>
+	<article class="wrap post">
+		<header>
+			<a class="back" href="/blog">← All posts</a>
+			<p class="eyebrow">
+				Blog
+				{draft && <span class="draft">Draft</span>}
+			</p>
+			<h1>{title}</h1>
+			<p class="lede">{description}</p>
+			<p class="meta">
+				<time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+				{
+					updatedDate && (
+						<>
+							{' · Updated '}
+							<time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
+						</>
+					)
+				}
+				{tags.length > 0 && <> · {tags.join(', ')}</>}
+			</p>
+		</header>
+
+		<div class="post-body">
+			<Content />
+		</div>
+	</article>
+</BaseLayout>
+
+<style>
+	.post {
+		max-width: 44rem;
+		padding-top: 4rem;
+	}
+
+	.back {
+		display: inline-block;
+		margin-bottom: 2.5rem;
+		font-size: 0.9rem;
+		color: var(--muted);
+		text-decoration: none;
+	}
+
+	.back:hover {
+		color: var(--accent);
+	}
+
+	h1 {
+		margin-top: 0.75rem;
+		font-size: clamp(2.25rem, 6vw, 3.5rem);
+	}
+
+	.lede {
+		margin-top: 1rem;
+		font-size: 1.2rem;
+		color: var(--muted);
+	}
+
+	.meta {
+		margin-top: 1.5rem;
+		padding-bottom: 2rem;
+		border-bottom: 1px solid var(--rule);
+		font-size: 0.9rem;
+		color: var(--muted);
+	}
+
+	.draft {
+		margin-left: 0.5rem;
+		padding: 0.1rem 0.5rem;
+		border-radius: 999px;
+		background: var(--rule);
+		color: var(--muted);
+	}
+
+	.post-body {
+		margin-top: 2.5rem;
+		font-size: 1.075rem;
+		line-height: 1.75;
+	}
+
+	.post-body :global(* + *) {
+		margin-top: 1.25em;
+	}
+
+	.post-body :global(h2) {
+		margin-top: 2.5em;
+		font-size: 1.75rem;
+	}
+
+	.post-body :global(h3) {
+		margin-top: 2em;
+		font-size: 1.3rem;
+	}
+
+	/* Tailwind's preflight strips list markers and padding; restore them for prose. */
+	.post-body :global(ul) {
+		padding-left: 1.5em;
+		list-style: disc;
+	}
+
+	.post-body :global(ol) {
+		padding-left: 1.5em;
+		list-style: decimal;
+	}
+
+	.post-body :global(li + li) {
+		margin-top: 0.4em;
+	}
+
+	.post-body :global(a) {
+		color: var(--accent);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.post-body :global(blockquote) {
+		padding-left: 1.25rem;
+		border-left: 3px solid var(--accent);
+		color: var(--muted);
+	}
+
+	.post-body :global(code) {
+		font-family: var(--font-mono);
+		font-size: 0.9em;
+	}
+
+	.post-body :global(:not(pre) > code) {
+		padding: 0.15em 0.4em;
+		border-radius: 6px;
+		background: var(--rule);
+	}
+
+	.post-body :global(pre) {
+		padding: 1.25rem;
+		border-radius: var(--radius);
+		overflow-x: auto;
+		font-size: 0.9rem;
+		line-height: 1.6;
+	}
+
+	/* Shiki renders both themes as variables; follow the page's colour scheme. */
+	.post-body :global(.astro-code),
+	.post-body :global(.astro-code span) {
+		color: light-dark(var(--shiki-light), var(--shiki-dark));
+		background-color: light-dark(var(--shiki-light-bg), var(--shiki-dark-bg));
+	}
+
+	.post-body :global(pre code) {
+		font-size: inherit;
+	}
+
+	.post-body :global(img) {
+		border-radius: var(--radius);
+	}
+</style>

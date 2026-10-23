@@ -1,0 +1,175 @@
+---
+import { experience } from '../lib/experience';
+import { getPosts } from '../lib/posts';
+
+// Only link case studies that are actually built (drafts are excluded in production).
+const publishedIds = new Set((await getPosts()).map((post) => post.id));
+
+function formatMonth(month: string) {
+	return new Date(`${month}-01`).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+}
+---
+
+<section class="wrap experience" id="experience" aria-labelledby="experience-heading">
+	<div class="section-head">
+		<h2 id="experience-heading">Experience</h2>
+		<a href="/alex-tana-cv.pdf" class="btn btn-primary" download>
+			Download CV
+			<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14" />
+			</svg>
+		</a>
+	</div>
+
+	<ol class="jobs">
+		{
+			experience.flatMap((job) =>
+				job.roles.map((role) => (
+					<li class="entry" data-current={role.end ? undefined : ''}>
+						<p class="period">
+							<time datetime={role.start}>{formatMonth(role.start)}</time> –{' '}
+							{role.end ? <time datetime={role.end}>{formatMonth(role.end)}</time> : 'Present'}
+						</p>
+						<div class="body">
+							<h3>{role.title}</h3>
+							<p class="company">
+								{job.company} · {job.location}
+							</p>
+							<ul class="highlights">
+								{role.highlights.map(({ text, caseStudy }) => (
+									<li>
+										{text}
+										{caseStudy && publishedIds.has(caseStudy) && (
+											<a href={`/blog/${caseStudy}`} class="case-study">
+												Read the post <span aria-hidden="true">→</span>
+											</a>
+										)}
+									</li>
+								))}
+							</ul>
+						</div>
+					</li>
+				)),
+			)
+		}
+	</ol>
+</section>
+
+<style>
+	.experience {
+		padding-top: 4rem;
+	}
+
+	.section-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 2.5rem;
+	}
+
+	h2 {
+		font-size: clamp(1.75rem, 4vw, 2.5rem);
+	}
+
+	.jobs {
+		padding: 0;
+		list-style: none;
+	}
+
+	.entry {
+		display: grid;
+		grid-template-columns: 11rem 1fr;
+		gap: 2rem;
+	}
+
+	.period {
+		padding-top: 0.2rem;
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
+		color: var(--muted);
+		white-space: nowrap;
+	}
+
+	/* The rail: a line down the left of each entry with a dot at the role title. */
+	.body {
+		position: relative;
+		padding: 0 0 2.75rem 2rem;
+		border-left: 1px solid var(--rule);
+	}
+
+	.entry:last-child .body {
+		padding-bottom: 0;
+		border-image: linear-gradient(var(--rule), transparent) 1;
+	}
+
+	.body::before {
+		content: '';
+		position: absolute;
+		top: 0.45rem;
+		left: -0.3125rem;
+		width: 0.625rem;
+		height: 0.625rem;
+		border-radius: 50%;
+		background: var(--bg);
+		border: 1px solid var(--muted);
+	}
+
+	.entry[data-current] .body::before {
+		background: var(--accent);
+		border-color: var(--accent);
+		box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent);
+	}
+
+	h3 {
+		font-size: 1.25rem;
+	}
+
+	.company {
+		margin-top: 0.25rem;
+		font-weight: 500;
+		color: var(--accent);
+	}
+
+	.highlights {
+		display: grid;
+		gap: 0.5rem;
+		margin-top: 1rem;
+		padding-left: 1.1rem;
+		list-style: disc;
+		color: var(--muted);
+	}
+
+	.highlights li::marker {
+		color: var(--rule);
+	}
+
+	.case-study {
+		margin-left: 0.35rem;
+		font-weight: 500;
+		color: var(--accent);
+		text-decoration: none;
+		white-space: nowrap;
+	}
+
+	.case-study:hover {
+		text-decoration: underline;
+	}
+
+	@media (max-width: 40rem) {
+		.entry {
+			grid-template-columns: 1fr;
+			gap: 0;
+		}
+
+		.period {
+			padding: 0 0 0.5rem 2rem;
+			border-left: 1px solid var(--rule);
+		}
+
+		.body::before {
+			top: -1.6rem;
+		}
+	}
+</style>

@@ -1,0 +1,373 @@
+---
+import Logo from './Logo.astro';
+import { nav, site } from '../lib/site';
+
+// Seeded so the stars land in the same place on every build.
+let seed = 7;
+const random = () => {
+	seed = (seed * 16807) % 2147483647;
+	return (seed - 1) / 2147483646;
+};
+
+const stars = Array.from({ length: 90 }, () => ({
+	x: random() * 100,
+	y: random() * 100,
+	size: 1 + random() * random() * 2.5,
+	delay: random() * 6,
+	duration: 2 + random() * 4,
+}));
+---
+
+<section class="masthead" data-hero>
+	<div class="scene" aria-hidden="true">
+		<div class="sky">
+			<div class="stars">
+				{
+					stars.map(({ x, y, size, delay, duration }) => (
+						<span
+							class="star"
+							style={`--x: ${x.toFixed(2)}%; --y: ${y.toFixed(2)}%; --size: ${size.toFixed(2)}px; --delay: ${delay.toFixed(2)}s; --duration: ${duration.toFixed(2)}s`}
+						/>
+					))
+				}
+			</div>
+			<div class="sun"></div>
+		</div>
+		<div class="sea">
+			<div class="sea-light">
+				<div class="reflection"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="wrap content">
+		<nav class="hero-nav" aria-label="Main">
+			<ul>
+				{
+					nav.map(({ label, href }) => (
+						<li>
+							<a href={href}>{label}</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+
+		<div class="intro">
+			<Logo as="h1" size="xl" />
+			<p class="role">{site.role} · {site.location}</p>
+			<p class="lede">
+				Front-end engineer with 8 years in the field, building high-performance, scalable applications that teams can
+				keep building on long after launch.
+			</p>
+			<a href="/alex-tana-cv.pdf" class="btn btn-primary cta" download>
+				Get my CV
+				<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14" />
+				</svg>
+			</a>
+		</div>
+	</div>
+</section>
+
+<script>
+	const hero = document.querySelector<HTMLElement>('.masthead');
+	const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	// Set the sun as the hero scrolls away: --set goes 0 … 1 over the first 60% of the hero.
+	// It lives on the root so the sections after the hero can rise in step with it.
+	if (hero && !reducedMotion) {
+		let frame = 0;
+
+		const update = () => {
+			const progress = Math.min(Math.max(scrollY / (hero.offsetHeight * 0.6), 0), 1);
+			document.documentElement.style.setProperty('--set', progress.toFixed(4));
+			frame = 0;
+		};
+
+		window.addEventListener('scroll', () => (frame ||= requestAnimationFrame(update)), { passive: true });
+		update();
+	}
+
+	// Gently parallax the stars and sun with the pointer. Skipped on touch and for reduced motion.
+	const canAnimate = matchMedia('(pointer: fine)').matches && !reducedMotion;
+
+	if (hero && canAnimate) {
+		let targetX = 0;
+		let targetY = 0;
+		let x = 0;
+		let y = 0;
+		let frame = 0;
+
+		const tick = () => {
+			x += (targetX - x) * 0.06;
+			y += (targetY - y) * 0.06;
+			hero.style.setProperty('--glow-x', x.toFixed(4));
+			hero.style.setProperty('--glow-y', y.toFixed(4));
+			frame = Math.abs(targetX - x) + Math.abs(targetY - y) > 0.001 ? requestAnimationFrame(tick) : 0;
+		};
+
+		window.addEventListener(
+			'pointermove',
+			(event) => {
+				// -0.5 … 0.5 from the centre of the viewport.
+				targetX = event.clientX / innerWidth - 0.5;
+				targetY = event.clientY / innerHeight - 0.5;
+				if (!frame) frame = requestAnimationFrame(tick);
+			},
+			{ passive: true },
+		);
+	}
+</script>
+
+<style>
+	/* The homepage always uses the night theme, so the page continues into the sky below the hero. */
+	:global(:root:has([data-hero])) {
+		--hero-overlap: 25svh;
+
+		color-scheme: dark;
+	}
+
+	/*
+	 * The page after the hero overlaps the faded-out sea. It starts just below the fold and rises
+	 * faster than the scroll as the sun sets, so it's settled near the top by the time you reach it.
+	 * Without JS or with reduced motion --set is unset, and it simply sits in its settled position.
+	 */
+	:global([data-hero] ~ *, main:has(> [data-hero]) ~ footer) {
+		position: relative;
+		translate: 0 calc(var(--hero-overlap) * (1 - var(--set, 1)));
+	}
+
+	/* Warmer muted text over the sunset. */
+	.masthead {
+		--muted: #f5cdb8;
+		--horizon: 66%;
+		--sun-x: 72%;
+
+		position: relative;
+		display: flex;
+		height: 100vh;
+		height: 100svh;
+		margin-bottom: calc(var(--hero-overlap) * -1);
+		padding-block: 1.5rem;
+		overflow: hidden;
+		isolation: isolate;
+		color: var(--text);
+		background: var(--bg);
+	}
+
+	@media (max-width: 40rem) {
+		.masthead {
+			--horizon: 72%;
+			--sun-x: 50%;
+		}
+	}
+
+	.scene {
+		position: absolute;
+		inset: 0;
+		z-index: -2;
+		pointer-events: none;
+	}
+
+	.sky {
+		position: absolute;
+		inset: 0 0 calc(100% - var(--horizon));
+		overflow: hidden;
+		background: linear-gradient(
+			to bottom,
+			#0b0a24 0%,
+			#1f1846 25%,
+			#4a2468 45%,
+			#9c3468 63%,
+			#e0583e 82%,
+			#ff9a4a 94%,
+			#ffc46b 100%
+		);
+	}
+
+	/* Dusk creeping in over the warm sky as the sun sets. */
+	.sky::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to bottom, #0b0a24, #1f1846 45%, #3a1f55);
+		opacity: calc(var(--set, 0) * 0.9);
+	}
+
+	/* Stars fade out as the sky warms towards the horizon, and brighten as it darkens. */
+	.stars {
+		position: absolute;
+		opacity: calc(0.75 + var(--set, 0) * 0.25);
+		inset: -2rem;
+		bottom: 30%;
+		mask-image: linear-gradient(to bottom, black 35%, transparent);
+		translate: calc(var(--glow-x, 0) * -16px) calc(var(--glow-y, 0) * -10px);
+	}
+
+	.star {
+		position: absolute;
+		left: var(--x);
+		top: var(--y);
+		width: var(--size);
+		height: var(--size);
+		border-radius: 50%;
+		background: #fff8ec;
+		box-shadow: 0 0 calc(var(--size) * 3) rgb(255 248 236 / 0.7);
+		animation: twinkle var(--duration) ease-in-out var(--delay) infinite alternate;
+	}
+
+	@keyframes twinkle {
+		0%,
+		40% {
+			opacity: 1;
+			transform: scale(1);
+		}
+		70% {
+			opacity: 0.25;
+			transform: scale(0.6);
+		}
+		100% {
+			opacity: 0.9;
+			transform: scale(1.1);
+		}
+	}
+
+	/* Half-set sun: centred on the horizon, clipped by the sky, and sinking with --set. */
+	.sun {
+		--sun: clamp(10rem, 34vmin, 22rem);
+
+		position: absolute;
+		left: var(--sun-x);
+		bottom: 0;
+		width: var(--sun);
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: linear-gradient(to bottom, #fff1c4, #ffc46b 45%, #ff7a3d);
+		box-shadow:
+			0 0 4rem 1rem rgb(255 170 90 / calc(0.55 * (1 - var(--set, 0)))),
+			0 0 12rem 5rem rgb(255 110 70 / calc(0.35 * (1 - var(--set, 0))));
+		translate: calc(-50% + var(--glow-x, 0) * 10px) calc(50% + var(--set, 0) * 50%);
+	}
+
+	.sea {
+		position: absolute;
+		inset: var(--horizon) 0 0;
+		overflow: hidden;
+		background:
+			/* Settle into the page background so the next section follows on seamlessly. */
+			linear-gradient(to bottom, transparent 55%, var(--bg)),
+			/* Faint swell lines across the water. */
+			repeating-linear-gradient(to bottom, transparent 0 14px, rgb(255 160 110 / 0.035) 14px 15px),
+			linear-gradient(to bottom, #4a2050 0%, #241640 45%, var(--bg) 100%);
+	}
+
+	/* Everything the sun lights on the water, fading out as it sets. */
+	.sea-light {
+		position: absolute;
+		inset: 0;
+		opacity: calc(1 - var(--set, 0) * 1.3);
+		background:
+			radial-gradient(60% 45% at var(--sun-x) 0%, rgb(255 140 70 / 0.55), transparent 70%),
+			linear-gradient(to bottom, #8a2f4f, transparent 20%);
+	}
+
+	/* The sun's reflection: broken bright streaks that narrow and fade with distance. */
+	.reflection {
+		position: absolute;
+		top: 0;
+		left: var(--sun-x);
+		width: clamp(10rem, 34vmin, 22rem);
+		height: 100%;
+		translate: -50% 0;
+		background: repeating-linear-gradient(
+			to bottom,
+			rgb(255 200 120 / 0.9) 0 3px,
+			transparent 3px 11px
+		);
+		mask-image: radial-gradient(50% 90% at 50% 0%, black 15%, transparent 75%);
+		animation: shimmer 4s ease-in-out infinite alternate;
+	}
+
+	@keyframes shimmer {
+		from {
+			transform: scaleX(1);
+			opacity: 0.9;
+		}
+		50% {
+			transform: scaleX(0.8);
+			opacity: 0.65;
+		}
+		to {
+			transform: scaleX(1.08);
+			opacity: 0.85;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.star,
+		.reflection {
+			animation: none;
+		}
+	}
+
+	/* Film grain over the whole scene, fading out towards the next section. */
+	.masthead::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		mask-image: linear-gradient(to bottom, black 70%, transparent);
+		z-index: -1;
+		pointer-events: none;
+		background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+	}
+
+	.content {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.hero-nav ul {
+		display: flex;
+		justify-content: flex-end;
+		gap: 1.5rem;
+		padding: 0;
+		list-style: none;
+	}
+
+	.hero-nav a {
+		font-size: 0.9rem;
+		font-weight: 500;
+		color: var(--muted);
+		text-decoration: none;
+	}
+
+	.hero-nav a:hover {
+		color: var(--text);
+	}
+
+	.intro {
+		padding-top: clamp(3rem, 12vh, 8rem);
+		text-shadow: 0 2px 24px rgb(18 13 38 / 0.45);
+	}
+
+	.role {
+		margin-top: 1.25rem;
+		font-family: var(--font-display);
+		font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+		font-weight: 600;
+		color: var(--accent);
+	}
+
+	.lede {
+		max-width: 38rem;
+		margin-top: 1rem;
+		font-size: clamp(1.05rem, 1.8vw, 1.2rem);
+		color: var(--muted);
+	}
+
+	.cta {
+		margin-top: 2rem;
+		text-shadow: none;
+	}
+</style>

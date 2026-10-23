@@ -1,0 +1,219 @@
+:root {
+  --accent: #0284c7;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --rule: #e5e7eb;
+  --bg: #ffffff;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+  background: #f3f4f6;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.cv {
+  max-width: 210mm;
+  margin: 2rem auto;
+  padding: 3rem;
+  background: var(--bg);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+}
+
+.cv-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 3px solid var(--accent);
+}
+
+h1 {
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.role {
+  margin-top: 0.25rem;
+  font-size: 1.1rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.contact {
+  list-style: none;
+  padding: 0;
+  text-align: right;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+section {
+  margin-top: 1.5rem;
+}
+
+h2 {
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.25rem;
+}
+
+h3 {
+  font-size: 1rem;
+}
+
+.org {
+  font-weight: 500;
+}
+
+.entry + .entry {
+  margin-top: 1rem;
+}
+
+.entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.dates,
+.entry-meta {
+  font-size: 0.85rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.entry ul {
+  margin-top: 0.35rem;
+  padding-left: 1.1rem;
+}
+
+.entry li + li {
+  margin-top: 0.15rem;
+}
+
+/* Several roles at the same company, listed under it. */
+.position {
+  margin-top: 0.6rem;
+}
+
+h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+}
+
+.links {
+  list-style: none;
+  padding: 0;
+}
+
+.links li + li {
+  margin-top: 0.25rem;
+}
+
+.links a {
+  font-weight: 600;
+}
+
+.url {
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.skills {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.3rem 1.5rem;
+}
+
+.skills dt {
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .cv {
+    margin: 0;
+    padding: 1.5rem;
+  }
+
+  .cv-header,
+  .entry-head {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .contact {
+    text-align: left;
+  }
+
+  .skills {
+    grid-template-columns: 1fr;
+  }
+
+  .skills dd {
+    margin-bottom: 0.5rem;
+  }
+}
+
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
+@media print {
+  :root {
+    background: none;
+    font-size: 12px;
+  }
+
+  .cv {
+    margin: 0;
+    padding: 0;
+    max-width: none;
+    box-shadow: none;
+  }
+
+  .entry,
+  .position {
+    break-inside: avoid;
+  }
+
+  /* The Amiqus entry is longer than a page allows, so let it split between its roles. */
+  .entry:has(.position) {
+    break-inside: auto;
+  }
+
+  .entry li {
+    break-inside: avoid;
+  }
+
+  a:hover {
+    color: inherit;
+    text-decoration: none;
+  }
+}

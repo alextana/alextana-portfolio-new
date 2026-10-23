@@ -1,0 +1,326 @@
+---
+interface Props {
+	/** Width of the content column the decorations sit beside: `narrow` for posts, `wide` for full-width pages. */
+	column?: 'narrow' | 'wide';
+}
+
+const { column = 'narrow' } = Astro.props;
+
+type Kind = 'gulls' | 'ball' | 'sun' | 'starfish' | 'wave' | 'orb';
+
+// A fixed rotation so neighbours never repeat, with seeded jitter so every build looks the same.
+const kinds: Kind[] = ['gulls', 'ball', 'orb', 'starfish', 'sun', 'wave', 'orb', 'ball', 'gulls', 'sun', 'starfish', 'orb', 'wave'];
+// Fixed sunset colours: the theme's accent turns brown on the light background.
+const orbColours = ['#ff8a7a', '#b79cff', '#ffc46b'];
+const sizes: Record<Kind, [number, number]> = {
+	gulls: [6, 8.5],
+	wave: [5, 7],
+	ball: [3.5, 5.5],
+	sun: [2.5, 6],
+	starfish: [3, 4.5],
+	orb: [1.25, 2.75],
+};
+
+let seed = 11;
+const random = () => {
+	seed = (seed * 16807) % 2147483647;
+	return (seed - 1) / 2147483646;
+};
+const between = (min: number, max: number) => min + random() * (max - min);
+
+// Enough to cover a long post; the layer clips anything below the end of the page.
+const items = Array.from({ length: 72 }, (_, i) => {
+	const kind = kinds[i % kinds.length];
+	return {
+		kind,
+		side: i % 2 === 0 ? 'left' : 'right',
+		top: Math.round(120 + i * 220 + between(-50, 50)),
+		gap: between(1.5, 5).toFixed(2),
+		size: between(...sizes[kind]).toFixed(2),
+		colour: orbColours[i % orbColours.length],
+		// Parallax factor: higher drifts further from its resting place as it crosses the screen.
+		speed: between(0.08, 0.28).toFixed(3),
+		// Degrees per pixel scrolled, for the things that roll.
+		spin: kind === 'ball' ? between(0.08, 0.16).toFixed(3) : kind === 'starfish' ? between(-0.06, 0.06).toFixed(3) : '0',
+		tilt: Math.round(between(-18, 18)),
+	};
+});
+
+// Starfish: five rounded arms, built once.
+const starPoints = Array.from({ length: 10 }, (_, i) => {
+	const angle = (Math.PI / 5) * i - Math.PI / 2;
+	const r = i % 2 === 0 ? 46 : 20;
+	return `${(Math.cos(angle) * r).toFixed(1)},${(Math.sin(angle) * r).toFixed(1)}`;
+}).join(' ');
+
+// Beach ball seen from above: six wedges around the pole, edges swirled so it reads as round.
+const ballFills = ['#ff8a7a', '#fff4e6', '#ffc46b', '#fff4e6', '#b79cff', '#fff4e6'];
+const polar = (deg: number, r: number) => {
+	const a = (deg * Math.PI) / 180;
+	return `${(Math.cos(a) * r).toFixed(2)},${(Math.sin(a) * r).toFixed(2)}`;
+};
+const wedges = ballFills.map((fill, i) => {
+	const a = i * 60;
+	const b = a + 60;
+	return { fill, d: `M0,0 Q${polar(a + 22, 30)} ${polar(a, 48)} A48,48 0 0 1 ${polar(b, 48)} Q${polar(b + 22, 30)} 0,0 Z` };
+});
+---
+
+<div class:list={['beach-decor', column]} aria-hidden="true">
+	{
+		items.map((item) => (
+			<div
+				class="item"
+				data-kind={item.kind}
+				data-side={item.side}
+				data-speed={item.speed}
+				data-spin={item.spin}
+				style={`--top: ${item.top}px; --gap: ${item.gap}rem; --size: ${item.size}rem; --tilt: ${item.tilt}deg`}
+			>
+				<div class="pop">
+					{item.kind === 'gulls' && (
+						<svg viewBox="0 0 120 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+							<path class="gull" d="M6 30 Q16 16 26 28 Q36 16 46 30" />
+							<path class="gull" d="M58 14 Q66 4 74 13 Q82 4 90 14" />
+							<path class="gull" d="M70 50 Q77 42 84 49 Q91 42 98 50" />
+						</svg>
+					)}
+					{item.kind === 'ball' && (
+						<svg viewBox="-50 -50 100 100">
+							<defs>
+								<clipPath id={`ball-${item.top}`}>
+									<circle r="48" />
+								</clipPath>
+								<radialGradient id={`ball-shade-${item.top}`} cx="35%" cy="30%" r="75%">
+									<stop offset="0%" stop-color="#fff" stop-opacity="0.45" />
+									<stop offset="55%" stop-color="#fff" stop-opacity="0" />
+									<stop offset="100%" stop-color="#120d26" stop-opacity="0.35" />
+								</radialGradient>
+							</defs>
+							<g clip-path={`url(#ball-${item.top})`}>
+								{wedges.map(({ d, fill }) => (
+									<path d={d} fill={fill} />
+								))}
+								<circle r="48" fill={`url(#ball-shade-${item.top})`} />
+							</g>
+							<circle r="7" fill="#fff4e6" />
+						</svg>
+					)}
+					{item.kind === 'sun' && <span class="sun" />}
+					{item.kind === 'orb' && <span class="orb" style={`--orb: ${item.colour}`} />}
+					{item.kind === 'starfish' && (
+						<svg viewBox="-50 -50 100 100">
+							<polygon points={starPoints} fill="var(--pink)" stroke="var(--pink)" stroke-width="12" stroke-linejoin="round" />
+							<g fill="#fff4e6" opacity="0.55">
+								<circle r="3" />
+								<circle cy="-18" r="2.2" />
+								<circle cx="17" cy="-6" r="2.2" />
+								<circle cx="-17" cy="-6" r="2.2" />
+								<circle cx="10" cy="15" r="2.2" />
+								<circle cx="-10" cy="15" r="2.2" />
+							</g>
+						</svg>
+					)}
+					{item.kind === 'wave' && (
+						<svg viewBox="0 0 120 40" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
+							<path d="M4 14 q14 -12 28 0 t28 0 t28 0 t28 0" />
+							<path d="M18 30 q14 -12 28 0 t28 0 t28 0" opacity="0.5" />
+						</svg>
+					)}
+				</div>
+			</div>
+		))
+	}
+</div>
+
+<script>
+	const layer = document.querySelector<HTMLElement>('.beach-decor');
+	const items = layer ? [...layer.querySelectorAll<HTMLElement>('.item')] : [];
+	const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	if (layer && items.length) {
+		layer.classList.add('is-enhanced');
+
+		// Pop each one in as it nears the screen and back out once it's gone.
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) entry.target.classList.toggle('is-in', entry.isIntersecting);
+			},
+			{ rootMargin: '-8% 0px' },
+		);
+		items.forEach((item) => observer.observe(item));
+
+		if (!reducedMotion) {
+			// Resting centres, measured without any transform applied.
+			let centres: number[] = [];
+			const measure = () => {
+				const layerTop = layer.getBoundingClientRect().top + scrollY;
+				centres = items.map((item) => layerTop + item.offsetTop + item.offsetHeight / 2);
+			};
+
+			let frame = 0;
+			const update = () => {
+				const middle = scrollY + innerHeight / 2;
+				items.forEach((item, i) => {
+					const distance = centres[i] - middle;
+					// Skip anything well off screen.
+					if (Math.abs(distance) > innerHeight * 1.5) return;
+					item.style.setProperty('--shift', `${(-distance * Number(item.dataset.speed)).toFixed(1)}px`);
+					item.style.setProperty('--spin', `${(scrollY * Number(item.dataset.spin)).toFixed(1)}deg`);
+				});
+				frame = 0;
+			};
+			const schedule = () => (frame ||= requestAnimationFrame(update));
+
+			measure();
+			update();
+			addEventListener('scroll', schedule, { passive: true });
+			addEventListener('resize', () => {
+				measure();
+				schedule();
+			});
+			// Images and fonts loading can move the page under us.
+			addEventListener('load', () => {
+				measure();
+				schedule();
+			});
+		}
+	}
+</script>
+
+<style>
+	/* Fills the page behind the content; the parent supplies position and a stacking context. */
+	.beach-decor {
+		--half-column: 22rem;
+
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		overflow: clip;
+		pointer-events: none;
+	}
+
+	.beach-decor.wide {
+		--half-column: 36rem;
+	}
+
+	/* Only where there's a real margin beside the text. */
+	.beach-decor.narrow .item {
+		display: none;
+	}
+
+	@media (min-width: 70rem) {
+		.beach-decor.narrow .item {
+			display: block;
+		}
+	}
+
+	.beach-decor.wide .item {
+		display: none;
+	}
+
+	@media (min-width: 88rem) {
+		.beach-decor.wide .item {
+			display: block;
+		}
+	}
+
+	.item {
+		position: absolute;
+		top: var(--top);
+		width: var(--size);
+		color: var(--muted);
+		translate: 0 var(--shift, 0);
+		rotate: calc(var(--tilt) + var(--spin, 0deg));
+		will-change: translate, rotate;
+	}
+
+	.item[data-side='left'] {
+		right: calc(50% + var(--half-column) + var(--gap));
+	}
+
+	.item[data-side='right'] {
+		left: calc(50% + var(--half-column) + var(--gap));
+	}
+
+	.item[data-kind='wave'] {
+		color: var(--accent);
+		opacity: 0.6;
+	}
+
+	.item[data-kind='gulls'] {
+		rotate: none;
+	}
+
+	svg {
+		display: block;
+		width: 100%;
+		height: auto;
+		overflow: visible;
+	}
+
+	/* Hidden until JS knows where they are, then they pop in and out with the scroll. */
+	.is-enhanced .pop {
+		opacity: 0;
+		scale: 0.5;
+		transition:
+			opacity 0.5s ease,
+			scale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	.is-enhanced .is-in .pop {
+		opacity: 1;
+		scale: 1;
+	}
+
+	/* A small version of the hero's sun. */
+	.sun {
+		display: block;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: linear-gradient(to bottom, #fff1c4, #ffc46b 45%, #ff7a3d);
+		box-shadow: 0 0 2rem 0.25rem rgb(255 150 80 / 0.35);
+	}
+
+	/* A small glossy sphere. */
+	.orb {
+		display: block;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background:
+			radial-gradient(circle at 32% 28%, rgb(255 255 255 / 0.85), transparent 30%),
+			radial-gradient(circle at 50% 50%, var(--orb), color-mix(in srgb, var(--orb), #120d26 45%));
+		box-shadow: 0 0.75rem 1.5rem -0.5rem color-mix(in srgb, var(--orb), transparent 40%);
+	}
+
+	.gull {
+		transform-box: fill-box;
+		transform-origin: center bottom;
+		animation: flap 1.6s ease-in-out infinite alternate;
+	}
+
+	.gull:nth-child(2) {
+		animation-delay: -0.5s;
+	}
+
+	.gull:nth-child(3) {
+		animation-delay: -1.1s;
+	}
+
+	@keyframes flap {
+		to {
+			scale: 1 0.55;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.is-enhanced .pop {
+			scale: 1;
+			transition: opacity 0.5s ease;
+		}
+
+		.gull {
+			animation: none;
+		}
+	}
+</style>

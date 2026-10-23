@@ -1,0 +1,51 @@
+---
+import { Font } from 'astro:assets';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BeachDecor from '../components/BeachDecor.astro';
+import { site } from '../lib/site';
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+	/** Hide the header until the hero has scrolled out of view (homepage). */
+	revealHeader?: boolean;
+	/** Scroll-driven beach decorations in the margins, sized to the page's content column. */
+	decor?: 'narrow' | 'wide';
+}
+
+const { title, description = site.description, revealHeader = false, decor } = Astro.props;
+const pageTitle = title ? `${title} · ${site.name}` : `${site.author} · ${site.role}`;
+---
+
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{pageTitle}</title>
+		<meta name="description" content={description} />
+		<Font cssVariable="--font-display" preload />
+		<Font cssVariable="--font-body" preload />
+		<Font cssVariable="--font-mono" preload />
+	</head>
+	<body>
+		<a class="skip-link" href="#main">Skip to content</a>
+		<Header revealAfterHero={revealHeader} />
+		<main id="main" class:list={{ 'has-decor': decor }}>
+			{decor && <BeachDecor column={decor} />}
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	/* Gives the decorations a box to fill and keeps them behind the content. */
+	.has-decor {
+		position: relative;
+		isolation: isolate;
+	}
+</style>

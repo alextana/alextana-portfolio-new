@@ -1,0 +1,26 @@
+---
+import CaseStudyCard from './CaseStudyCard.astro';
+import { getCaseStudies } from '../lib/posts';
+
+const caseStudies = await getCaseStudies();
+---
+
+{
+	caseStudies.length > 0 && (
+		<section class="wrap case-studies" id="case-studies">
+			<h2 class="visually-hidden">Featured posts</h2>
+			{caseStudies.map((post) => (
+				<CaseStudyCard post={post} />
+			))}
+		</section>
+	)
+}
+
+<style>
+	.case-studies {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+		gap: 1.5rem;
+		padding-top: 4rem;
+	}
+</style>
