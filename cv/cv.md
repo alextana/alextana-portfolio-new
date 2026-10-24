@@ -71,6 +71,7 @@ _Nov 2018 – Mar 2021_
 - **Testing:** Vitest, Vue Test Utils, Pest (end-to-end)
 - **Practices:** Accessibility (WCAG), large-scale migrations, feature-flagged rollouts, design systems, AI-assisted development (Claude), cross-functional collaboration
 - **Design:** Photoshop, Adobe XD, Figma
+- **Speaking:** Internal talks at Amiqus on AI-assisted development and our design system
 
 ## Education
 
