@@ -1,0 +1,142 @@
+---
+// The "Bored?" easter egg: a cat runner played along the hero's horizon. Open it with any [data-open-cat-game] button.
+// It's a full-screen dialog with no box or backdrop, so the hero scene shows straight through it; the dialog just
+// gives us Esc to close, focus handling and an inert page underneath.
+---
+
+<dialog id="cat-game" class="game" aria-label="Cat run">
+	<canvas
+		class="screen"
+		tabindex="0"
+		autofocus
+		aria-label="Cat runner game. Jump the crates, dodge the red-eyed hawks, and catch the teal birds for points."></canvas>
+
+	<form method="dialog">
+		<button class="btn btn-lg close">
+			<svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+				<path d="M6 6l12 12M18 6 6 18" />
+			</svg>
+			Exit game
+			<kbd class="kbd kbd-sm esc" aria-hidden="true">Esc</kbd>
+		</button>
+	</form>
+</dialog>
+
+<script>
+	import { CatGame } from '../lib/cat-game';
+
+	const dialog = document.querySelector<HTMLDialogElement>('#cat-game');
+	const canvas = dialog?.querySelector('canvas');
+	const horizon = document.querySelector<HTMLElement>('[data-game-horizon]');
+	const column = document.querySelector<HTMLElement>('[data-game-column]');
+	const hero = document.querySelector<HTMLElement>('[data-hero]');
+
+	if (dialog && canvas && horizon && column && hero) {
+		let game: CatGame | undefined;
+
+		// Line the game up with the hero: run along the horizon, start at the content's left edge.
+		const layout = () => {
+			const bounds = column.getBoundingClientRect();
+			return { horizon: horizon.getBoundingClientRect().top, left: bounds.left, right: bounds.right };
+		};
+
+		document.querySelectorAll('[data-open-cat-game]').forEach((button) =>
+			button.addEventListener('click', () => {
+				// The horizon only lines up with the top of the page.
+				window.scrollTo({ top: 0, behavior: 'instant' });
+				dialog.showModal();
+				// The game sets and raises the hero's sun for its day/night cycle. Scoped to the hero, so the
+				// sections after it (which also follow --set) stay put.
+				(game ??= new CatGame(canvas, {
+					layout,
+					onNight: (amount) => hero.style.setProperty('--set', amount.toFixed(4)),
+				})).start();
+			}),
+		);
+
+		dialog.addEventListener('close', () => {
+			game?.stop();
+			hero.style.removeProperty('--set');
+		});
+	}
+</script>
+
+<style>
+	:global(:root:has(#cat-game[open])) {
+		overflow: hidden;
+	}
+
+	.game {
+		position: fixed;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		max-height: none;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: var(--text);
+		text-shadow: none;
+		animation: fade-in 0.4s ease-out;
+	}
+
+	.game::backdrop {
+		background: transparent;
+	}
+
+	.screen {
+		display: block;
+		width: 100%;
+		height: 100%;
+		outline: none;
+		touch-action: none;
+		user-select: none;
+		-webkit-user-select: none;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	/* Sits where the hero nav was, lined up with the content column. */
+	.close {
+		position: absolute;
+		top: 1rem;
+		right: max(1.5rem, (100% - var(--container)) / 2);
+		gap: 0.6rem;
+		border: 1px solid rgb(255 244 230 / 0.4);
+		border-radius: 999px;
+		color: var(--text);
+		background: rgb(18 13 38 / 0.45);
+		backdrop-filter: blur(6px);
+		box-shadow: 0 4px 24px rgb(18 13 38 / 0.35);
+	}
+
+	.close:hover {
+		border-color: var(--text);
+		background: rgb(18 13 38 / 0.7);
+	}
+
+	.esc {
+		border-color: rgb(255 244 230 / 0.35);
+		color: var(--muted);
+		background: transparent;
+	}
+
+	@media (pointer: coarse) {
+		.esc {
+			display: none;
+		}
+	}
+
+	@keyframes fade-in {
+		from {
+			opacity: 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.game {
+			animation: none;
+		}
+	}
+</style>

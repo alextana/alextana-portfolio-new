@@ -1,4 +1,5 @@
 ---
+import CatGame from './CatGame.astro';
 import Logo from './Logo.astro';
 import { nav, site } from '../lib/site';
 
@@ -33,14 +34,14 @@ const stars = Array.from({ length: 90 }, () => ({
 			</div>
 			<div class="sun"></div>
 		</div>
-		<div class="sea">
+		<div class="sea" data-game-horizon>
 			<div class="sea-light">
 				<div class="reflection"></div>
 			</div>
 		</div>
 	</div>
 
-	<div class="wrap content">
+	<div class="wrap content" data-game-column>
 		<nav class="hero-nav" aria-label="Main">
 			<ul>
 				{
@@ -60,14 +61,25 @@ const stars = Array.from({ length: 90 }, () => ({
 				Front-end engineer with 8 years in the field, building high-performance, scalable applications that teams can
 				keep building on long after launch.
 			</p>
-			<a href="/alex-tana-cv.pdf" class="btn btn-primary cta" download>
-				Get my CV
-				<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-					<path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14" />
-				</svg>
-			</a>
+			<div class="cta">
+				<a href="/alex-tana-cv.pdf" class="btn btn-primary" download>
+					Get my CV
+					<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14" />
+					</svg>
+				</a>
+				<button type="button" class="btn btn-outline bored" data-open-cat-game>
+					Bored?
+					<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M5 10 4 3.5 9 7h6l5-3.5-1 6.5v3a7 7 0 0 1-14 0z" />
+						<path d="M9.5 12.5h.01M14.5 12.5h.01" stroke-width="2.75" />
+					</svg>
+				</button>
+			</div>
 		</div>
 	</div>
+
+	<CatGame />
 </section>
 
 <script>
@@ -325,6 +337,15 @@ const stars = Array.from({ length: 90 }, () => ({
 	.content {
 		display: flex;
 		flex-direction: column;
+		transition:
+			opacity 0.3s ease-out,
+			visibility 0.3s;
+	}
+
+	/* Clear the stage while the cat game plays over the hero. */
+	.masthead:has(#cat-game[open]) .content {
+		visibility: hidden;
+		opacity: 0;
 	}
 
 	.hero-nav ul {
@@ -367,7 +388,22 @@ const stars = Array.from({ length: 90 }, () => ({
 	}
 
 	.cta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
 		margin-top: 2rem;
 		text-shadow: none;
+	}
+
+	.bored {
+		border-color: rgb(255 244 230 / 0.35);
+		color: var(--text);
+		background: rgb(18 13 38 / 0.25);
+		backdrop-filter: blur(4px);
+	}
+
+	.bored:hover {
+		border-color: var(--text);
+		background: rgb(18 13 38 / 0.45);
 	}
 </style>
