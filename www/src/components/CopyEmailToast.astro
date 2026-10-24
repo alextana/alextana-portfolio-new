@@ -1,0 +1,61 @@
+---
+// mailto: links do nothing for visitors without a mail app set up (e.g. Gmail-in-the-browser users), so every
+// email link also copies the address and says so. The link still navigates, so mail apps keep working.
+---
+
+<div class="toast" role="status" aria-live="polite" data-copy-email-toast></div>
+
+<script>
+	const toast = document.querySelector<HTMLElement>('[data-copy-email-toast]');
+	let hideTimer: number | undefined;
+
+	document.addEventListener('click', async (event) => {
+		const link = (event.target as Element).closest<HTMLAnchorElement>('a[href^="mailto:"]');
+		if (!link || !toast) return;
+
+		const email = decodeURIComponent(link.href.slice('mailto:'.length).split('?')[0]);
+		try {
+			await navigator.clipboard.writeText(email);
+			toast.textContent = `Copied ${email}`;
+		} catch {
+			toast.textContent = email;
+		}
+
+		toast.classList.add('is-visible');
+		clearTimeout(hideTimer);
+		hideTimer = window.setTimeout(() => toast.classList.remove('is-visible'), 3000);
+	});
+</script>
+
+<style>
+	.toast {
+		position: fixed;
+		bottom: 1.5rem;
+		left: 50%;
+		z-index: 100;
+		padding: 0.6rem 1.1rem;
+		border-radius: 999px;
+		background: var(--text);
+		color: var(--bg);
+		font-size: 0.9rem;
+		font-weight: 500;
+		box-shadow: 0 0.5rem 2rem rgb(18 13 38 / 0.25);
+		pointer-events: none;
+		opacity: 0;
+		transform: translate(-50%, 0.75rem);
+		transition:
+			opacity 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.toast.is-visible {
+		opacity: 1;
+		transform: translate(-50%, 0);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.toast {
+			transition: none;
+		}
+	}
+</style>
