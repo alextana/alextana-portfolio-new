@@ -8,7 +8,7 @@
 
 ## Summary
 
-Senior front-end engineer with 8 years of experience building accessible, maintainable web applications in Vue and Svelte, with hands-on React experience. I've co-led large cross-functional migrations (Vue 2 → Vue 3, Webpack → Vite) that shipped with zero production issues, and I'm currently building a design system from the ground up. I'm also leading my team's adoption of AI-assisted development with Claude. Excited to explore what's next in the engineering space in the age of AI.
+Senior front-end engineer with 8 years of experience building accessible, maintainable web applications in Vue and Svelte, with hands-on React experience. I've led large cross-functional migrations (Vue 2 → Vue 3, Webpack → Vite) that shipped with zero production issues, and I'm currently building a design system from the ground up. I'm also leading my team's adoption of AI-assisted development with Claude. Excited to explore what's next in the engineering space in the age of AI.
 
 ## About
 
@@ -34,9 +34,9 @@ _Feb 2025 – Present_
 
 _Feb 2023 – Feb 2025_
 
-- Co-led the **Vue 2 → Vue 3 migration** of a ten-year-old Laravel and Vue 2 app with almost no test coverage, as one of two engineers. Rated every route by risk, served Vue 2 and Vue 3 side by side route by route, and piloted migrated routes with clients behind a feature flag. Shipped in February 2025 with zero issues after release and no visible change for users.
+- Led the **Vue 2 → Vue 3 migration** of a ten-year-old Laravel and Vue 2 app with almost no test coverage, as one of two engineers. Rated every route by risk, served Vue 2 and Vue 3 side by side route by route, and piloted migrated routes with clients behind a feature flag. Shipped in February 2025 with zero issues after release and no visible change for users.
 - Fixed performance problems in the form builder on forms with hundreds of fields by reworking `v-model` handling, batching store mutations and cutting unnecessary re-renders.
-- Co-led the **Webpack → Vite migration** with the platform team, coordinating with every function to deliver a like-for-like switch with no impact on users and zero issues after release.
+- Led the **Webpack → Vite migration** with the platform team, coordinating with every function to deliver a like-for-like switch with no impact on users and zero issues after release.
 - Led accessibility remediation following an **AbilityNet audit**, resolving the findings across the app over a multi-month project.
 
 ### Front-End Developer · BarkWeb · Eastbourne, UK

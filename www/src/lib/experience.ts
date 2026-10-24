@@ -42,10 +42,10 @@ export const experience: Job[] = [
 				end: '2025-02',
 				highlights: [
 					{
-						text: 'Co-led the Vue 2 → Vue 3 migration of the entire app, shipped with zero issues after release.',
+						text: 'Led the Vue 2 → Vue 3 migration of the entire app, shipped with zero issues after release.',
 						caseStudy: 'vue-2-to-vue-3-migration',
 					},
-					{ text: 'Co-led the Webpack → Vite migration with the platform team, a like-for-like switch with no impact on users.' },
+					{ text: 'Led the Webpack → Vite migration with the platform team, a like-for-like switch with no impact on users.' },
 					{ text: 'Led accessibility remediation following an AbilityNet audit across a multi-month project.' },
 				],
 			},
