@@ -165,7 +165,12 @@ const { Content } = await render(post);
 		font-size: inherit;
 	}
 
+	/* Cap tall (e.g. phone) screenshots; wide images are limited by the column first. */
 	.post-body :global(img) {
+		display: block;
+		width: auto;
+		max-height: 40rem;
+		margin-inline: auto;
 		border-radius: var(--radius);
 	}
 </style>
