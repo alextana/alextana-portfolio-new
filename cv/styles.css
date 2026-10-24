@@ -1,14 +1,26 @@
+/* The website's sunset palette, in its light (golden hour) variant so it prints well. */
 :root {
-  --accent: #0284c7;
-  --text: #1f2937;
-  --muted: #6b7280;
-  --rule: #e5e7eb;
+  --night: #120d26;
+  --dusk: #4a2468;
+  --sunset: #e0583e;
+  --gold: #ffc46b;
+  --accent: #a8480a;
+  --purple: #6b3fa0;
+  --pink: #b8324f;
+  --text: #24172f;
+  --muted: #6b5677;
+  --rule: #eadbc8;
+  --accent-soft: #fcebd4;
   --bg: #ffffff;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   font-size: 15px;
   line-height: 1.5;
   color: var(--text);
-  background: #f3f4f6;
+  background: #f4ece2;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
 }
 
 * {
@@ -29,63 +41,142 @@ a:hover {
 .cv {
   max-width: 210mm;
   margin: 2rem auto;
-  padding: 3rem;
+  padding: 2.5rem 3rem 3rem;
   background: var(--bg);
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
 }
 
+/* A slice of the website's hero: night sky into sunset, with the sun half-set on the horizon. */
 .cv-header {
+  position: relative;
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
   gap: 2rem;
-  padding-bottom: 1.25rem;
-  border-bottom: 3px solid var(--accent);
+  padding: 1.75rem 2rem;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 14px;
+  color: #fff4e6;
+  background: linear-gradient(100deg, #0b0a24 0%, #1f1846 30%, var(--dusk) 58%, #9c3468 80%, var(--sunset) 100%);
+}
+
+.sun {
+  position: absolute;
+  right: 42%;
+  bottom: 0;
+  z-index: -1;
+  width: 8rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, #fff1c4, var(--gold) 45%, #ff7a3d);
+  box-shadow: 0 0 3rem 0.75rem rgb(255 170 90 / 0.45);
+  opacity: 0.85;
+  translate: 0 55%;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
 h1 {
-  font-size: 2rem;
-  line-height: 1.1;
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .role {
-  margin-top: 0.25rem;
-  font-size: 1.1rem;
-  color: var(--accent);
+  margin-top: 0.4rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
   font-weight: 600;
+  color: var(--gold);
 }
 
 .contact {
   list-style: none;
   padding: 0;
   text-align: right;
-  font-size: 0.875rem;
-  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: #f5dccb;
+}
+
+.contact a:hover {
+  color: var(--gold);
 }
 
 section {
   margin-top: 1.5rem;
 }
 
+/* Section titles with a short sunset bar, fading into a hairline. */
 h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   margin-bottom: 0.75rem;
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--accent);
-  border-bottom: 1px solid var(--rule);
-  padding-bottom: 0.25rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+h2::before {
+  content: "";
+  width: 1.4rem;
+  height: 0.3rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--purple), var(--pink), var(--sunset));
+}
+
+h2::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
 }
 
 h3 {
-  font-size: 1rem;
+  font-size: 1.05rem;
+  font-weight: 700;
 }
 
 .org {
   font-weight: 500;
+  color: var(--accent);
+}
+
+/* Experience as a timeline rail, like the website's. */
+.entry {
+  position: relative;
+  margin-left: 0.4rem;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--rule);
+}
+
+.entry::before {
+  content: "";
+  position: absolute;
+  top: 0.4rem;
+  left: -0.4rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+}
+
+.entry:first-of-type::before {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .entry + .entry {
-  margin-top: 1rem;
+  margin-top: 1.1rem;
 }
 
 .entry-head {
@@ -95,11 +186,21 @@ h3 {
   gap: 1rem;
 }
 
-.dates,
 .entry-meta {
   font-size: 0.85rem;
   color: var(--muted);
+}
+
+.dates {
+  flex-shrink: 0;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
   white-space: nowrap;
+  color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .entry ul {
@@ -107,8 +208,16 @@ h3 {
   padding-left: 1.1rem;
 }
 
+.entry li::marker {
+  color: var(--sunset);
+}
+
 .entry li + li {
   margin-top: 0.15rem;
+}
+
+strong {
+  color: var(--purple);
 }
 
 /* Several roles at the same company, listed under it. */
@@ -117,32 +226,16 @@ h3 {
 }
 
 h4 {
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.98rem;
+  font-weight: 650;
 }
 
 code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.9em;
-}
-
-.links {
-  list-style: none;
-  padding: 0;
-}
-
-.links li + li {
-  margin-top: 0.25rem;
-}
-
-.links a {
-  font-weight: 600;
-}
-
-.url {
-  margin-left: 0.5rem;
-  font-size: 0.85rem;
-  color: var(--muted);
+  padding: 0 0.25rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--accent-soft);
 }
 
 .skills {
@@ -153,17 +246,30 @@ code {
 
 .skills dt {
   font-weight: 600;
+  color: var(--accent);
+}
+
+/* Education has no rail of its own to continue, so it sits flush. */
+section:last-child .entry {
+  margin-left: 0;
+  padding-left: 0;
+  border-left: 0;
+}
+
+section:last-child .entry::before {
+  content: none;
 }
 
 @media (max-width: 640px) {
   .cv {
     margin: 0;
-    padding: 1.5rem;
+    padding: 1rem;
   }
 
   .cv-header,
   .entry-head {
     flex-direction: column;
+    align-items: flex-start;
     gap: 0.5rem;
   }
 
@@ -210,6 +316,10 @@ code {
 
   .entry li {
     break-inside: avoid;
+  }
+
+  h2 {
+    break-after: avoid;
   }
 
   a:hover {

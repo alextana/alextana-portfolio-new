@@ -10,6 +10,10 @@
 
 Senior front-end engineer with 8 years of experience building accessible, maintainable web applications in Vue and Svelte, with hands-on React experience. I've co-led large cross-functional migrations (Vue 2 → Vue 3, Webpack → Vite) that shipped with zero production issues, and I'm currently building a design system from the ground up. I'm also leading my team's adoption of AI-assisted development with Claude. Excited to explore what's next in the engineering space in the age of AI.
 
+## About
+
+I'm Italian, and I moved to the UK in 2015 to study drums at BIMM Brighton. I've been tinkering with HTML and CSS since I was a child, starting out making skins for phpBB forums. After university I decided to give it a go as a profession, and here we are.
+
 ## Experience
 
 ### Amiqus · Brighton, UK (Remote)
@@ -68,13 +72,8 @@ _Nov 2018 – Mar 2021_
 - **Practices:** Accessibility (WCAG), large-scale migrations, feature-flagged rollouts, design systems, AI-assisted development (Claude), cross-functional collaboration
 - **Design:** Photoshop, Adobe XD, Figma
 
-## Writing
-
-- [Migrating a production app from Vue 2 to Vue 3](https://alextana.dev/blog/vue-2-to-vue-3-migration)
-- [How I approached building Amiqus' design system](https://alextana.dev/blog/building-a-design-system)
-
 ## Education
 
 #### BA (Hons) Professional Musicianship @ BIMM Brighton (drums)
 
-_[2015] – [2018]_
+_2015 – 2018_
