@@ -18,6 +18,8 @@ interface Props {
 
 const { title, description = site.description, revealHeader = false, decor } = Astro.props;
 const pageTitle = title ? `${title} · ${site.name}` : `${site.author} · ${site.role}`;
+// Umami Cloud analytics: production builds only, so local dev visits aren't counted.
+const umamiWebsiteId = import.meta.env.PROD ? import.meta.env.UMAMI_WEBSITE_ID : undefined;
 ---
 
 <html lang="en-GB">
@@ -32,6 +34,9 @@ const pageTitle = title ? `${title} · ${site.name}` : `${site.author} · ${site
 		<Font cssVariable="--font-display" preload />
 		<Font cssVariable="--font-body" preload />
 		<Font cssVariable="--font-mono" preload />
+		{umamiWebsiteId && (
+			<script is:inline defer src="https://cloud.umami.is/script.js" data-website-id={umamiWebsiteId}></script>
+		)}
 	</head>
 	<body>
 		<a class="skip-link" href="#main">Skip to content</a>
