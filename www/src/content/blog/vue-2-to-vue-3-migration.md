@@ -3,6 +3,7 @@ title: Migrating a production app from Vue 2 to Vue 3
 description: How a two-person team migrated a ten-year-old Laravel and Vue 2 app to Vue 3 with no test safety net, while feature work kept landing until we finally won a code freeze.
 pubDate: 2026-10-23
 tags: [Vue, Laravel]
+cover: ../../assets/blog/vue-migration/cover.svg
 caseStudy:
   order: 1
   highlights: [Vue 2 → Vue 3, Two-person team, Zero post-release issues]
