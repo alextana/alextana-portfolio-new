@@ -2,7 +2,7 @@
 title: Plant Bud, a plant monitor that tells me when to water
 description: A side project that wires a battery-powered ESP32 to a small server and an AI model, so my orchid gets a daily check-up and I get a push notification only when it actually needs me.
 pubDate: 2026-10-23
-tags: [Side project, IoT, AI, React]
+tags: [ESP32, React, Tailwind, Hono, Gemini]
 caseStudy:
   order: 3
   highlights: [ESP32 sensor node, Daily AI analysis, Push notifications]

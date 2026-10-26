@@ -2,7 +2,7 @@
 title: How I approached building Amiqus' design system
 description: Shipping more than 15 production components alongside feature work, and getting designers to the point where they open PRs.
 pubDate: 2026-10-23
-tags: [Design systems, Vue, Accessibility]
+tags: [Vue, Tailwind, Storybook]
 caseStudy:
   order: 2
   highlights: [15+ components, Designers opening PRs, Built alongside features]
